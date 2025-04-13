@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants for Job</title>
+
+    <!-- Modern sans-serif font stack -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #3b82f6;  /* Blueish primary color */
+            --primary-hover: #2563eb;
+            --primary-light: #93c5fd;
+            --secondary: #e0f2fe;  /* Light blue background */
+            --dark: #1e3a8a;
+            --light: #f0f9ff;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--secondary);
+            color: var(--dark);
+            line-height: 1.5;
+            background-image:
+                    radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.1) 0px, transparent 50%),
+                    radial-gradient(at 0% 50%, hsla(212, 100%, 47%, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 50%;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .applicant-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .applicant-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .applicant-table thead th {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem;
+        }
+
+        .applicant-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .applicant-table tbody tr:hover {
+            background-color: var(--light);
+        }
+
+        .applicant-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e0f2fe;
+        }
+
+        .applicant-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .profile-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .profile-btn:hover {
+            background-color: white;
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            color: var(--dark);
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn:hover {
+            background-color: var(--light);
+            border-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            border-radius: 0.5rem;
+            background-color: var(--primary);
+            margin-left: 0.75rem;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .applicant-table thead {
+                display: none;
+            }
+
+            .applicant-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .applicant-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #e0f2fe;
+            }
+
+            .applicant-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                margin-right: 1rem;
+                color: #6b7280;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Applicants for <span th:text="${job.jobTitle}" class="badge"></span></h2>
+
+    <!-- Modern styled table -->
+    <div class="applicant-card">
+        <table class="applicant-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Profile</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="applicant, iterStat : ${applicants}">
+                <td data-label="#">[[${iterStat.index + 1}]]</td>
+                <td data-label="First Name">[[${applicant.firstName}]]</td>
+                <td data-label="Last Name">[[${applicant.lastName}]]</td>
+                <td data-label="Profile">
+                    <a th:href="@{/applicants/applicant-profile/{applicantId}(applicantId=${applicant.id})}" class="profile-btn">View Profile</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Back button with modern style -->
+    <a href="/dashboard" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Back to dashboard
+    </a>
+</div>
+</body>
+</html>

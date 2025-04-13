@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 400px; /* Adjusted width */
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center everything */
+      width: 100%;
+    }
+    label {
+      font-weight: bold;
+      align-self: flex-start;
+      margin-bottom: 8px;
+    }
+    input[type="text"], input[type="password"] {
+      padding: 14px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      width: 100%; /* Full width inside the form */
+      box-sizing: border-box; /* Ensures padding doesn't overflow */
+    }
+    button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%; /* Full width */
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .error {
+      color: red;
+      margin-bottom: 15px;
+    }
+    .register-link {
+      margin-top: 20px;
+      font-size: 15px;
+      color: #555;
+    }
+    .register-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <h1>Login</h1>
+
+  <!-- Display login error message -->
+  <div th:if="${param.error}" class="error">
+    Invalid username or password
+  </div>
+
+  <!-- Display logout success message -->
+  <div th:if="${param.logout}" class="error" style="color: green;">
+    You have been logged out successfully
+  </div>
+
+  <form th:action="@{/login}" method="post">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <div class="register-link">
+    Don't have an account? <a th:href="@{/register}">Register</a>
+  </div>
+</div>
+
+</body>
+</html>

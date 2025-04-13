@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        .navbar-brand .text-warning {
+            color: #ffc107 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            margin: 0 10px;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: #ffc107;
+            color: #212529;
+            transform: translateY(-2px);
+        }
+
+        .navbar-toggler {
+            border-color: #ffffff;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ffffff;
+            border-radius: 3px;
+        }
+
+        .nav-item:last-child {
+            font-weight: bold;
+            color: #ffc107;
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: #6610f2;
+                padding: 1rem;
+                border-radius: 10px;
+            }
+        }
+
+        /* Improved button styles */
+        .btn-apply {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.375rem 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-apply:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-save {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 0.375rem 1.5rem;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background-color: #138496;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-view {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.375rem 1.5rem;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .btn-view:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-group-sm .btn-apply,
+        .btn-group-sm .btn-save,
+        .btn-group-sm .btn-view {
+            padding: 0.25rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* NEW STYLES FOR APPLY BUTTONS */
+        .apply-button {
+            padding: 0.375rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        /* "Apply Now" button (active state) */
+        a.apply-button {
+            background-color: #28a745;
+            color: white;
+        }
+
+        a.apply-button:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* "Already Applied" button (disabled state) */
+        span.apply-button {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .saved-button {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        .saved-button:hover {
+            background-color: #5a6268 !important;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<header class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/dashboard}">Job Portal<span class="text-warning">.com</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item" sec:authorize="hasAuthority('job seeker')">
+                    <a class="nav-link" th:href="@{/jobs/search}">Search for a job</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasAuthority('job seeker')">
+                    <a class="nav-link" th:href="@{/jobs/saved}">Saved Jobs</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('job seeker')">
+                    <a class="nav-link"
+                       th:href="@{/applicants/applicant-profile/{profileId}(profileId=${seekerProfile.getJobSeekerProfileId()}) }">
+                        View Your Profile</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasAuthority('job seeker')">
+                    <a class="nav-link" th:href="@{/job-seeker-profile/}">Edit Your Profile</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasAuthority('recruiter')">
+                    <a class="nav-link" th:href="@{/dashboard/add}">Post A new Job</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('recruiter')">
+                    <a class="nav-link" th:href="@{/dashboard}">View Your Jobs</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('recruiter')">
+                    <a class="nav-link" th:href="@{/recruiter-profile/}">Edit Your Profile</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </li>
+                <li class="nav-item" th:if="${user.firstName !=null && user.lastName != null}"
+                    th:text="${user.firstName+' '+user.lastName}">
+                </li>
+                <li class="nav-item" th:unless="${user.firstName !=null && user.lastName != null}"
+                    th:text="${username}">
+                </li>
+            </ul>
+            <img
+                    class="rounded-circle me-3"
+                    height="50px"
+                    width="50px"
+                    th:if="${user.photosImagePath!=null}"
+                    th:src="@{${user?.photosImagePath}}"
+            />
+
+        </div>
+    </div>
+</header>
+
+<body>
+<div class="container mt-4">
+    <h2>Welcome to your Dashboard</h2>
+
+    <!-- Job Listings for Recruiters -->
+    <div sec:authorize="hasAuthority('recruiter')">
+        <h3 class="mt-4">Your Job Posts</h3>
+        <table class="table table-bordered mt-3">
+            <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="job : ${jobPost}">
+                <td th:text="${job.jobTitle}"></td>
+                <td th:text="${job.jobCompanyId.name}"></td>
+                <td th:text="${job.jobLocationId.city + ', ' + job.jobLocationId.country}"></td>
+                <td>
+                    <a th:href="@{/dashboard/edit/{id}(id=${job.jobPostId})}" class="btn btn-primary btn-sm">Edit</a>
+                    <a th:href="@{/dashboard/delete/{id}(id=${job.jobPostId})}" class="btn btn-danger btn-sm">Delete</a>
+                    <a th:href="@{/dashboard/view/{id}(id=${job.jobPostId})}" class="btn btn-view btn-sm">View</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container mt-5" sec:authorize="hasAnyAuthority('job seeker')">
+        <form class="d-flex justify-content-center" th:action="@{/dashboard}" method="get">
+            <div class="input-group" style="max-width: 800px;" sec:authorize="hasAnyAuthority('job seeker')">
+                <input type="text" class="form-control" name="jobTitle" placeholder="Search by title"
+                       th:value="${jobTitle}">
+                <input type="text" class="form-control" name="jobDescription" placeholder="Search by description"
+                       th:value="${jobDescription}">
+                <div class="input-group-text" style="border-left: 1px solid #ccc; padding: 0 5px;">|</div>
+                <input type="text" class="form-control" name="city" placeholder="City"
+                       th:value="${city}">
+                <input type="text" class="form-control" name="country" placeholder="Country"
+                       th:value="${country}">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-4"  sec:authorize="hasAnyAuthority('job seeker')">
+        <h3>Search Results</h3>
+
+        <div th:if="${jobs.isEmpty()}">
+            <p class="text-muted" sec:authorize="hasAuthority('job seeker')">No jobs found.</p>
+
+        </div>
+        <ul class="list-group" th:if="${not jobs.isEmpty()}">
+            <li class="list-group-item d-flex flex-column gap-2" th:each="job : ${jobs}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong th:text="${job.jobTitle}"></strong>
+                        <span th:if="${job.jobLocation != null}" class="text-muted">
+                        • <span th:text="${job.jobLocation.city}"></span>,
+                        <span th:text="${job.jobLocation.country}"></span>
+                    </span>
+                        <span th:if="${job.jobCompany != null}" class="ms-2 text-primary">
+                        • <span th:text="${job.jobCompany.name}"></span>
+                    </span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex">
+                        <th:block th:if="${!appliedJobsMap[job.jobPostId]}">
+                            <a th:href="@{/apply/{id}(id=${job.jobPostId})}" class="apply-button">Apply Now</a>
+                        </th:block>
+                        <th:block th:if="${appliedJobsMap[job.jobPostId]}">
+                            <span class="apply-button">Already Applied</span>
+                        </th:block>
+                        <a th:href="@{/save-job/{id}(id=${job.jobPostId})}"
+                           class="btn btn-save btn-sm"
+                           th:classappend="${savedJobsMap[job.jobPostId]} ? 'btn-saved' : 'btn-primary'"
+                           th:disabled="${savedJobsMap[job.jobPostId]}"
+                           sec:authorize="hasAuthority('job seeker')">
+                            <span th:text="${savedJobsMap[job.jobPostId]} ? 'Saved' : 'Save'"></span>
+                        </a>
+
+                        <a th:href="@{/dashboard/view/{id}(id=${job.jobPostId})}" class="btn btn-view btn-sm">
+                            View
+                        </a>
+                    </div>
+                </div>
+
+                <p class="text-muted mb-1" th:text="${job.jobDescription}"></p>
+
+                <!-- Display Company Logo aligned neatly -->
+                <div th:if="${job.jobCompany.logo}" class="d-flex align-items-center gap-2">
+                    <img th:src="@{${job.jobCompany.logo}}" alt="Company Logo"
+                         style="width: 50px; height: auto; border-radius: 5px;">
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

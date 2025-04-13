@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4cc9f0;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--dark);
+        }
+
+        .container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 800px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--success));
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .detail-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+            padding: 0.75rem 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            line-height: 1.5;
+        }
+
+        .detail-value.text-area {
+            min-height: 120px;
+            white-space: pre-wrap;
+        }
+
+        .row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .row .detail-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .applicant-count {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .applicant-count svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        .logo-preview {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            padding: 0.5rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .no-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+        .applicant-link {
+            text-decoration: none; /* Remove underline */
+            color: inherit; /* Inherit text color */
+            cursor: pointer; /* Show pointer on hover */
+        }
+
+        .applicant-link:hover {
+            text-decoration: underline; /* Optional: subtle hover effect */
+        }
+
+        .back-button svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+                gap: 1.25rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Only show applicant count for recruiters -->
+    <div class="applicant-count" sec:authorize="hasAuthority('recruiter')" >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        <a th:href="@{'/job/' + ${job.jobPostId} + '/applicants'}" class="applicant-link">
+            <span th:text="${applicantCount} + ' Applicants'"></span>
+        </a>
+    </div>
+
+    <h2>Job Details</h2>
+
+    <div class="detail-group">
+        <span class="detail-label">Job Title</span>
+        <div class="detail-value" th:text="${job.jobTitle}"></div>
+    </div>
+
+    <div class="detail-group">
+        <span class="detail-label">Job Description</span>
+        <div class="detail-value text-area" th:text="${job.jobDescription}"></div>
+    </div>
+
+    <div class="row">
+        <div class="detail-group">
+            <span class="detail-label">Job Type</span>
+            <div class="detail-value" th:text="${job.jobType}"></div>
+        </div>
+
+        <div class="detail-group">
+            <span class="detail-label">Salary</span>
+            <div class="detail-value" th:text="${job.salary}"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="detail-group">
+            <span class="detail-label">Remote</span>
+            <div class="detail-value" th:text="${job.remote} ? 'Yes' : 'No'"></div>
+        </div>
+
+        <div class="detail-group">
+            <span class="detail-label">Location</span>
+            <div class="detail-value">
+                <span th:text="${job.jobLocation.city + ', ' + job.jobLocation.country}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-group">
+        <span class="detail-label">Company Name</span>
+        <div class="detail-value" th:text="${job.jobCompany.name}"></div>
+    </div>
+
+    <div class="detail-group">
+        <span class="detail-label">Company Logo</span>
+        <div>
+            <img th:if="${job.jobCompany.logo}" th:src="@{'/uploads/' + ${job.jobCompany.logo}}"
+                 alt="Company Logo" class="logo-preview">
+            <div th:unless="${job.jobCompany.logo}" class="no-logo">No logo available</div>
+        </div>
+    </div>
+
+    <a th:href="@{/dashboard}" class="back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Dashboard
+    </a>
+</div>
+
+</body>
+</html>

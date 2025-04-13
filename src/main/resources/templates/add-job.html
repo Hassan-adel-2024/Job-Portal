@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Job Post</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff, #f4f4f4);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            padding: 35px;
+            border: 1px solid #dee2e6;
+        }
+
+        h2 {
+            text-align: center;
+            color: #343a40;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            color: #495057;
+            transition: 0.3s ease-in-out;
+            outline: none;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #adb5bd;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: #fff;
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .upload-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s ease-in-out;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Post a New Job</h2>
+    <form th:action="@{/dashboard/addNew}" th:object="${job}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="jobTitle">Job Title</label>
+            <input type="text" id="jobTitle" th:field="*{jobTitle}" placeholder="Enter job title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="jobDescription">Job Description</label>
+            <textarea id="jobDescription" th:field="*{jobDescription}" placeholder="Describe the job..." required></textarea>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="jobType">Job Type</label>
+                <select id="jobType" th:field="*{jobType}">
+                    <option value="Full-Time">Full Time</option>
+                    <option value="Part-Time">Part Time</option>
+                    <option value="Remote">Remote</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="salary">Salary</label>
+                <input id="salary" type="text" th:field="*{salary}" placeholder="Enter salary">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="remote">Remote</label>
+                <input id="remote" type="text" th:field="*{remote}" placeholder="Yes/No">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input id="location" type="text" th:field="*{jobLocation.city}" placeholder="City">
+                <input type="text" th:field="*{jobLocation.country}" placeholder="Country">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="jobCompany">Company Name</label>
+            <input id="jobCompany" type="text" th:field="*{jobCompany.name}" placeholder="Company Name">
+        </div>
+
+        <div class="form-group">
+            <label for="companyLogo">Company Logo</label>
+            <div class="upload-box">
+                <input type="file" id="companyLogo" name="companyLogo">
+            </div>
+        </div>
+
+        <button type="submit">Post Job</button>
+    </form>
+
+    <a href="/dashboard" class="back-link">Back to Dashboard</a>
+</div>
+
+</body>
+</html>
